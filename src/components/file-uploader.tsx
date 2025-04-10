@@ -87,7 +87,7 @@ export const FileUploader = () => {
       const { files } = await response.json();
 
       // Construct public URLs for the files
-      const updatedFiles = files.map((file: any) => ({
+      const updatedFiles = files?.map((file: any) => ({
         ...file,
         url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${file.name}`,
       }));
@@ -162,7 +162,7 @@ export const FileUploader = () => {
             Upload Files
           </Button>
           <div className="space-y-2">
-            {files.map((file) => (
+            {files?.map((file) => (
               <div
                 key={file.name}
                 className="flex items-center justify-between"
@@ -184,7 +184,7 @@ export const FileUploader = () => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Uploaded Files</h3>
             <ul className="space-y-2">
-              {uploadedFiles.map((file) => (
+              {uploadedFiles?.map((file) => (
                 <li
                   key={file.name}
                   className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
