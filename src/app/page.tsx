@@ -1,4 +1,4 @@
-import { FileUploader } from "@/components/file-uploader";
+import FileUploader from "@/components/FileUploader/FileUploader";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 export default function Home() {
