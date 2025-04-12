@@ -16,18 +16,15 @@ interface FileListProps {
 
 const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
   const [copiedLink, setCopiedLink] = useState<string | null>(null); // Track which link was copied
-  const [tooltipOpen, setTooltipOpen] = useState<string | null>(null); // Track which tooltip is open
   const [editingFile, setEditingFile] = useState<string | null>(null); // Track which file is being edited
   const [newFileName, setNewFileName] = useState<string>(""); // Track the new file name during editing
 
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url).then(() => {
       setCopiedLink(url); // Set the copied link
-      setTooltipOpen(url); // Keep the tooltip open
       setTimeout(() => {
-        setCopiedLink(null); // Reset the copied state
-        setTooltipOpen(null); // Close the tooltip
-      }, 2000); // Clear the state after 2 seconds
+        setCopiedLink(null); // Reset the copied state after 2 seconds
+      }, 2000);
     });
   };
 
@@ -37,6 +34,18 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
     }
     setEditingFile(null); // Exit editing mode
     setNewFileName(""); // Reset the input value
+  };
+
+  const handleEditToggle = (fileName: string) => {
+    if (editingFile === fileName) {
+      // If already in edit mode, dismiss the input field
+      setEditingFile(null);
+      setNewFileName("");
+    } else {
+      // Enable edit mode
+      setEditingFile(fileName);
+      setNewFileName(fileName); // Pre-fill the input with the current file name
+    }
   };
 
   return (
@@ -49,7 +58,7 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
           {editingFile === file.name ? (
             <input
               type="text"
-              defaultValue={file.name}
+              value={newFileName}
               onChange={(e) => setNewFileName(e.target.value)}
               onBlur={() => handleRenameSubmit(file.name)} // Submit on blur
               onKeyDown={(e) => {
@@ -85,64 +94,21 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
           )}
           <div className="flex space-x-2">
             {/* Edit Button with Icon */}
-            {editingFile === file.name ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleRenameSubmit(file.name)} // Submit on click
-                    className="flex items-center"
-                  >
-                    <Check className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="p-2 text-sm font-semibold">Submit</div>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditingFile(file.name)} // Enter editing mode
-                    className="flex items-center"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="p-2 text-sm font-semibold">Edit</div>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            {/* Delete Button with Icon */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onDelete(file.name)}
-                  className="flex items-center"
-                >
-                  <Trash className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="p-2 text-sm font-semibold">Delete</div>
-              </TooltipContent>
-            </Tooltip>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleEditToggle(file.name)} // Toggle edit mode
+              className="flex items-center"
+            >
+              {editingFile === file.name ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Edit className="w-4 h-4" />
+              )}
+            </Button>
 
             {/* Copy Link Button with Icon */}
-            <Tooltip
-              open={tooltipOpen === file.url} // Keep tooltip open after clicking
-              onOpenChange={(isOpen) => {
-                if (!isOpen) setTooltipOpen(null); // Close tooltip manually
-              }}
-            >
+            <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
@@ -159,6 +125,16 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
                 </div>
               </TooltipContent>
             </Tooltip>
+
+            {/* Delete Button with Icon */}
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(file.name)}
+              className="flex items-center"
+            >
+              <Trash className="w-4 h-4" />
+            </Button>
           </div>
         </li>
       ))}
