@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { UploadedFile } from "./types";
+import { Clipboard, Edit, Trash, Check } from "lucide-react"; // Import icons from Lucide
 
 interface FileListProps {
   files: UploadedFile[];
@@ -14,7 +15,29 @@ interface FileListProps {
 }
 
 const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
-  const [editingFile, setEditingFile] = React.useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null); // Track which link was copied
+  const [tooltipOpen, setTooltipOpen] = useState<string | null>(null); // Track which tooltip is open
+  const [editingFile, setEditingFile] = useState<string | null>(null); // Track which file is being edited
+  const [newFileName, setNewFileName] = useState<string>(""); // Track the new file name during editing
+
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedLink(url); // Set the copied link
+      setTooltipOpen(url); // Keep the tooltip open
+      setTimeout(() => {
+        setCopiedLink(null); // Reset the copied state
+        setTooltipOpen(null); // Close the tooltip
+      }, 2000); // Clear the state after 2 seconds
+    });
+  };
+
+  const handleRenameSubmit = (fileName: string) => {
+    if (newFileName.trim() && newFileName !== fileName) {
+      onRename(fileName, newFileName.trim());
+    }
+    setEditingFile(null); // Exit editing mode
+    setNewFileName(""); // Reset the input value
+  };
 
   return (
     <ul className="space-y-2">
@@ -27,9 +50,10 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
             <input
               type="text"
               defaultValue={file.name}
-              onBlur={(e) => {
-                onRename(file.name, e.target.value.trim());
-                setEditingFile(null);
+              onChange={(e) => setNewFileName(e.target.value)}
+              onBlur={() => handleRenameSubmit(file.name)} // Submit on blur
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleRenameSubmit(file.name); // Submit on Enter
               }}
               autoFocus
               className="w-full border rounded px-2 py-1"
@@ -60,20 +84,81 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
             </Tooltip>
           )}
           <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setEditingFile(file.name)}
+            {/* Edit Button with Icon */}
+            {editingFile === file.name ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRenameSubmit(file.name)} // Submit on click
+                    className="flex items-center"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="p-2 text-sm font-semibold">Submit</div>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingFile(file.name)} // Enter editing mode
+                    className="flex items-center"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="p-2 text-sm font-semibold">Edit</div>
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* Delete Button with Icon */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(file.name)}
+                  className="flex items-center"
+                >
+                  <Trash className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="p-2 text-sm font-semibold">Delete</div>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Copy Link Button with Icon */}
+            <Tooltip
+              open={tooltipOpen === file.url} // Keep tooltip open after clicking
+              onOpenChange={(isOpen) => {
+                if (!isOpen) setTooltipOpen(null); // Close tooltip manually
+              }}
             >
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => onDelete(file.name)}
-            >
-              Delete
-            </Button>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCopyLink(file.url)}
+                  className="flex items-center"
+                >
+                  <Clipboard className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="p-2 text-sm font-semibold">
+                  {copiedLink === file.url ? "Copied!" : "Copy to Clipboard"}
+                </div>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </li>
       ))}
