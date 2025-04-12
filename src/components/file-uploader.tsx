@@ -54,6 +54,7 @@ export const FileUploader = () => {
   >([]);
   const [editingFile, setEditingFile] = useState<string | null>(null); // Track which file is being edited
   const [showProgress, setShowProgress] = useState(false); // Control progress bar visibility
+  const [copiedLink, setCopiedLink] = useState<string | null>(null); // Track which link was copied
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Ref for file input
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,6 +194,18 @@ export const FileUploader = () => {
     }
   };
 
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url).then(
+      () => {
+        setCopiedLink(url); // Set the copied link
+        setTimeout(() => setCopiedLink(null), 2000); // Clear the message after 2 seconds
+      },
+      (err) => {
+        console.error("Failed to copy link: ", err);
+      }
+    );
+  };
+
   useEffect(() => {
     fetchUploadedFiles(); // Fetch files on component mount
   }, []);
@@ -299,6 +312,13 @@ export const FileUploader = () => {
                       onClick={() => handleDelete(file.name)}
                     >
                       Delete
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopyLink(file.url)}
+                    >
+                      {copiedLink === file.url ? "Copied!" : "Copy Link"}
                     </Button>
                   </div>
                 </li>
