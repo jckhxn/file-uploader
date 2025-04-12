@@ -115,7 +115,7 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleEditToggle(file.name)} // Toggle edit mode
+                onClick={() => handleEditToggle(file.name)} // Toggle edit mode 
                 className="flex items-center"
               >
                 {editingFile === file.name ? (

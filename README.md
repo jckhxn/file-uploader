@@ -1,6 +1,6 @@
 # File Uploader with Cloudflare R2 Integration
 
-Welcome to the **File Uploader** project! This is a modern file management application built with **Next.js**. It’s designed to make uploading, managing, and interacting with files as smooth as possible. With features like **file renaming**, **deletion**, and **copy-to-clipboard**, this app is perfect for anyone looking for a simple yet powerful file management solution. Plus, it integrates seamlessly with **Cloudflare R2** for fast and reliable file storage.
+Welcome to the **File Uploader** project! This is a modern file management application built with **Next.js**. It’s designed to make uploading, managing, and interacting with files as smooth as possible. With features like **file renaming**, **deletion**, **copy-to-clipboard**, and **file previewing**, this app is perfect for anyone looking for a simple yet powerful file management solution. Plus, it integrates seamlessly with **Cloudflare R2** for fast and reliable file storage.
 
 ---
 
@@ -24,6 +24,13 @@ Welcome to the **File Uploader** project! This is a modern file management appli
 
 - Quickly copy a file's URL to your clipboard.
 - A tooltip confirms success with a "Copied!" message.
+
+### 🖼️ **File Preview**
+
+- Hover over a file to see a **tooltip preview** for images.
+- Click the **Preview** button to open a modal for a full preview.
+- The modal supports images, PDFs, and other embeddable file types.
+- Dismiss the modal by clicking outside it or using the **Close** button.
 
 ### ☁️ **Cloudflare R2 Integration**
 
@@ -59,6 +66,13 @@ Welcome to the **File Uploader** project! This is a modern file management appli
 2. The file's URL is copied to your clipboard.
 3. A tooltip displays "Copied!" to confirm the action.
 
+### Previewing Files
+
+1. Hover over a file to see a **tooltip preview** for images.
+2. Click the **Preview** button to open a modal for a full preview.
+3. The modal supports images, PDFs, and other embeddable file types.
+4. Dismiss the modal by clicking outside it or using the **Close** button.
+
 ---
 
 ## Technologies Used
@@ -77,7 +91,7 @@ Welcome to the **File Uploader** project! This is a modern file management appli
 ### UI Components
 
 - **Lucide Icons**: Clean and intuitive icons for a polished UI.
-- **Custom Tooltip**: Provides dynamic feedback for user actions like copying URLs.
+- **Custom Tooltip**: Provides dynamic feedback for user actions like copying URLs and previewing images.
 
 ---
 
@@ -90,8 +104,35 @@ Welcome to the **File Uploader** project! This is a modern file management appli
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/your-username/file-uploader-r2.git
    cd file-uploader-r2
+
    ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   npm install
+
+   ```
+
+3. **Set up environment variables**:
+   - Create a `.env.local` file in the root directory.
+   - Add your Cloudflare R2 credentials to the file:
+     ```env
+     R2_ACCESS_KEY=your-access-key
+     R2_SECRET_KEY=your-secret-key
+     R2_BUCKET_NAME=your-bucket-name
+     R2_REGION=your-region
+     ```
+4. **Run the development server**:
+
+   ```bash
+   npm run dev
+
+   ```
+
+5. [Open the app in your browser](http://localhost:3000)
