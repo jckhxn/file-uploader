@@ -107,8 +107,8 @@ Welcome to the **File Uploader** project! This is a modern file management appli
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/your-username/file-uploader-r2.git
-   cd file-uploader-r2
+   git clone https://github.com/jckhxn/file-uploader.git
+   cd file-uploader
 
    ```
 

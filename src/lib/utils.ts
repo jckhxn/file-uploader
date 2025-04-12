@@ -9,8 +9,8 @@ export const fetchUploadedFiles = async (): Promise<UploadedFile[]> => {
   if (!response.ok) {
     throw new Error("Failed to fetch uploaded files");
   }
-  const { files } = await response.json();
-  return files.map((file: any) => ({
+  const { files }: { files: UploadedFile[] } = await response.json(); // Specify the type
+  return files.map((file: UploadedFile) => ({
     name: file.name,
     url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${file.name}`,
     size: file.size,

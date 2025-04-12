@@ -1,7 +1,8 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
-
+import { UploadedFile } from "@/app/types";
+const API_BASE_URL = `/api/upload`;
 const s3 = new S3Client({
   endpoint: process.env.CLOUDFLARE_URL, // Base URL of your R2 storage
   region: "auto", // Cloudflare R2 uses "auto" for region
@@ -28,9 +29,13 @@ export async function POST(req: Request) {
       ContentType: fileType, // MIME type of the file
     });
 
+    console.log("Generating signed URL for:", fileName);
+
     // Generate a signed URL for uploading the file
     const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
     const fileUrl = `${process.env.CLOUDFLARE_URL}/${process.env.R2_BUCKET_NAME}/${fileName}`;
+
+    console.log("Signed URL generated successfully:", uploadUrl);
 
     return NextResponse.json({ uploadUrl, fileUrl });
   } catch (error) {
@@ -47,8 +52,8 @@ export const fetchUploadedFiles = async (): Promise<UploadedFile[]> => {
   if (!response.ok) {
     throw new Error("Failed to fetch uploaded files");
   }
-  const { files } = await response.json();
-  return files.map((file: any) => ({
+  const { files }: { files: UploadedFile[] } = await response.json(); // Specify the type here
+  return files.map((file: UploadedFile) => ({
     name: file.name,
     url: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${file.name}`,
     size: file.size,

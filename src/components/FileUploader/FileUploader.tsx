@@ -10,7 +10,7 @@ import {
   deleteFile,
   renameFile,
 } from "@/lib/utils";
-import { UploadedFile, PendingFile } from "./types";
+import { UploadedFile, PendingFile } from "@/app/types";
 import PendingFileList from "./PendingFileList";
 import FileList from "./FileList";
 
@@ -79,6 +79,34 @@ const FileUploader: React.FC = () => {
           >
             Upload Files
           </Button>
+          <div className="space-y-2">
+            {files.map(({ name }) => (
+              <div key={name} className="space-y-1">
+                <p className="text-sm">{name}</p>
+                <div className="w-full bg-gray-200 rounded h-2">
+                  {uploadStatus[name] && ( // Only show the progress bar if uploadStatus exists for the file
+                    <div
+                      className={`h-2 rounded ${
+                        uploadStatus[name] === "uploading"
+                          ? "bg-blue-500 animate-pulse"
+                          : uploadStatus[name] === "success"
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                      style={{
+                        width:
+                          uploadStatus[name] === "uploading"
+                            ? "50%"
+                            : uploadStatus[name] === "success"
+                            ? "100%"
+                            : "0%",
+                      }}
+                    ></div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
           <FileList
             files={uploadedFiles}
             onDelete={async (fileName) => {

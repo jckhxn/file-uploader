@@ -5,8 +5,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UploadedFile } from "./types";
+import { UploadedFile } from "@/app/types"; // Import the UploadedFile type
 import { Clipboard, Edit, Trash, Check, Eye } from "lucide-react"; // Import icons from Lucide
+import Image from "next/image";
 
 interface FileListProps {
   files: UploadedFile[];
@@ -93,16 +94,19 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
                   <div className="p-2">
                     <p className="text-sm font-semibold">{file.name}</p>
                     <p className="text-xs text-gray-500">
-                      Size: {(file.size / 1024).toFixed(2)} KB
+                      Size:{" "}
+                      {file.size ? (file.size / 1024).toFixed(2) : "Unknown"} KB
                     </p>
                     <p className="text-xs text-gray-500">
                       Last Modified: {file.lastModified}
                     </p>
                     {/* Image Preview in Tooltip */}
                     {file.url.match(/\.(jpeg|jpg|png|gif|webp)$/i) && (
-                      <img
+                      <Image
                         src={file.url}
                         alt={file.name}
+                        width={200} // Specify width
+                        height={100} // Specify height
                         className="mt-2 max-w-xs max-h-32 rounded border"
                       />
                     )}
@@ -115,7 +119,7 @@ const FileList: React.FC<FileListProps> = ({ files, onDelete, onRename }) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleEditToggle(file.name)} // Toggle edit mode 
+                onClick={() => handleEditToggle(file.name)} // Toggle edit mode
                 className="flex items-center"
               >
                 {editingFile === file.name ? (
